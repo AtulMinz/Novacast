@@ -1,4 +1,11 @@
+import { useNavigate } from "react-router-dom";
+
 const Hero = () => {
+  const navigate = useNavigate();
+
+  const goToStream = () => {
+    navigate("/stream");
+  };
   return (
     <main className="bg-black min-h-screen justify-center flex p-[30vh]">
       <div className="flex flex-col items-center">
@@ -8,7 +15,9 @@ const Hero = () => {
         <p className="text-gray-300 mt-3 text-2xl">
           A simple way to stream via browser
         </p>
-        <button className="btn btn-primary mt-8">Get Started</button>
+        <button className="btn btn-primary mt-8" onClick={goToStream}>
+          Get Started
+        </button>
       </div>
     </main>
   );
