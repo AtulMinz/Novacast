@@ -5,6 +5,8 @@ const Stream = () => {
   const [mediaStream, setMediaStream] = useState<MediaStream>();
   const [rtmp, setRtmp] = useState("");
   const userVideoRef = useRef<HTMLVideoElement>(null);
+  const screenVideoRef = useRef<HTMLVideoElement>(null);
+  const [, setScreenMedia] = useState<MediaStream>();
   const socket = io("http://localhost:3000");
 
   const handleStart = () => {
@@ -39,7 +41,19 @@ const Stream = () => {
       }
     };
 
+    const getScreen = async () => {
+      const screen = await navigator.mediaDevices.getDisplayMedia({
+        audio: true,
+        video: true,
+      });
+      setScreenMedia(screen);
+      if (screenVideoRef.current) {
+        screenVideoRef.current.srcObject = screen;
+      }
+    };
+
     getUserMedia();
+    getScreen();
 
     return () => {
       if (mediaStream) {
@@ -57,6 +71,7 @@ const Stream = () => {
       <main className="flex justify-center items-center min-h-screen">
         <div className="card w-[35vw] bg-base-100 shadow-xl">
           <video id="user-video" ref={userVideoRef} autoPlay muted></video>
+          <video id="screen-media" ref={screenVideoRef} autoPlay muted></video>
           <div className="card-body">
             <h2 className="card-title">Novacast</h2>
             <p>Stream your victory</p>
