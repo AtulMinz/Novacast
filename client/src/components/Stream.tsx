@@ -7,7 +7,27 @@ const Stream = () => {
   const userVideoRef = useRef<HTMLVideoElement>(null);
   const screenVideoRef = useRef<HTMLVideoElement>(null);
   const [, setScreenMedia] = useState<MediaStream>();
+  const [active, setActive] = useState<boolean>(false);
   const socket = io("http://localhost:3000");
+
+  const shareScreen = () => {
+    const getScreen = async () => {
+      const screen = await navigator.mediaDevices.getDisplayMedia({
+        audio: true,
+        video: true,
+      });
+      setScreenMedia(screen);
+      if (screenVideoRef.current) {
+        screenVideoRef.current.srcObject = screen;
+      }
+    };
+    getScreen();
+    setActive(true);
+  };
+
+  const stopShare = () => {
+    setActive(false);
+  };
 
   const handleStart = () => {
     if (mediaStream) {
@@ -41,19 +61,7 @@ const Stream = () => {
       }
     };
 
-    const getScreen = async () => {
-      const screen = await navigator.mediaDevices.getDisplayMedia({
-        audio: true,
-        video: true,
-      });
-      setScreenMedia(screen);
-      if (screenVideoRef.current) {
-        screenVideoRef.current.srcObject = screen;
-      }
-    };
-
     getUserMedia();
-    getScreen();
 
     return () => {
       if (mediaStream) {
@@ -68,16 +76,27 @@ const Stream = () => {
 
   return (
     <>
-      <main className="flex justify-center items-center min-h-screen">
-        <div className="card w-[35vw] bg-base-100 shadow-xl">
+      <main className="flex justify-end items-end min-h-screen flex-col">
+        {active ? (
+          <>
+            <video
+              id="screen-media"
+              ref={screenVideoRef}
+              autoPlay
+              muted
+              className="absolute"
+            ></video>
+          </>
+        ) : (
+          <button className="btn btn-primary m-2" onClick={shareScreen}>
+            Share Screen
+          </button>
+        )}
+        <div className="card w-[20vw] bg-base-100 shadow-xl">
           <video id="user-video" ref={userVideoRef} autoPlay muted></video>
-          <video id="screen-media" ref={screenVideoRef} autoPlay muted></video>
-          <div className="card-body">
-            <h2 className="card-title">Novacast</h2>
-            <p>Stream your victory</p>
+          <div className="card-body flex items-center p-4">
             <div className="card-actions justify-between">
-              <label className="input input-bordered flex items-center gap-2">
-                Stream key
+              <label className="input input-bordered flex items-center gap-2 w-full">
                 <input
                   type="text"
                   className="grow"
@@ -86,9 +105,14 @@ const Stream = () => {
                   onChange={(e) => setRtmp(e.target.value)}
                 />
               </label>
-              <button className="btn btn-primary" onClick={handleStart}>
+              <button className="btn btn-primary w-full" onClick={handleStart}>
                 Start Stream
               </button>
+              {active && (
+                <button className="btn btn-primary" onClick={stopShare}>
+                  End Stream
+                </button>
+              )}
             </div>
           </div>
         </div>
