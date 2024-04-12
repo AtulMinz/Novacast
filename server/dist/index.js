@@ -49,10 +49,10 @@ const options = [
     128000 / 4,
     "-f",
     "flv",
-    `rtmp://a.rtmp.youtube.com/live2/dcfx-m7v2-j248-3185-9207`,
+    `rtmp:url`,
 ];
 io.on("connection", (socket) => {
-    console.log("Socket Connected");
+    console.log("Socket Connected", socket.id);
     socket.on("binarystream", (stream) => {
         console.log("Binary incoming....");
         // ffmpegProcess.stdin.write(stream, (err) => {
@@ -64,5 +64,4 @@ io.on("connection", (socket) => {
         // Handle the received URL here...
     });
 });
-console.log("All good");
 server.listen(3000, () => console.log("HTTP server running on http://localhost:3000"));
