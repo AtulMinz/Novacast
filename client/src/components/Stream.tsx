@@ -27,6 +27,7 @@ const Stream = () => {
 
   const stopShare = () => {
     setActive(false);
+    mediaStream?.getTracks().forEach((track) => track.stop());
   };
 
   const handleStart = () => {
@@ -63,11 +64,11 @@ const Stream = () => {
 
     getUserMedia();
 
-    return () => {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach((track) => track.stop());
-      }
-    };
+    // return () => {
+    //   if (mediaStream) {
+    //     mediaStream.getTracks().forEach((track) => track.stop());
+    //   }
+    // };
   }, []);
 
   useEffect(() => {
